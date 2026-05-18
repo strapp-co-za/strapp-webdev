@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%">
+  <!-- Background Plate: Digital Lavender (#F3E8FF) -->
+  <rect width="32" height="32" rx="4" fill="#F3E8FF" />
+  
+  <!-- The Core Lowercase Code Token Sub-Module: r</> -->
+  <g fill="#1E293B">
+    <!-- Clean, Pixel-Aligned Monospace 'r' Glyph -->
+    <path d="M7 11 H11 V13 H12 C13 11.5 14.5 11 16 11 V15 C14.5 15 13 15.5 12 16.5 V23 H7 V11 Z" />
+    
+    <!-- Micro Integrated Structural Operator Tags </> -->
+    <!-- Opening Bracket < -->
+    <path d="M17 13 L14 15.5 L17 18" fill="none" stroke="#1E293B" stroke-width="1.2" stroke-linecap="square" />
+    
+    <!-- Ultra-Thin Slash / (50% Opacity for Mechanical Depth) -->
+    <line x1="19.5" y1="12" x2="17.5" y2="19" stroke="#1E293B" stroke-width="0.8" opacity="0.5" />
+    
+    <!-- Closing Bracket > -->
+    <path d="M20 13 L23 15.5 L20 18" fill="none" stroke="#1E293B" stroke-width="1.2" stroke-linecap="square" />
+  </g>
+</svg>

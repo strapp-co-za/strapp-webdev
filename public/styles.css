@@ -1,0 +1,79 @@
+/* STRAPP OPERATIONAL CORE // INDUSTRIAL DESIGN SYSTEM */
+:root {
+  --black-monolith: #000000;
+  --industrial-gray: #050505;
+  --border-subtle: #1a1a1a;
+  --border-active: #ffffff;
+  --text-primary: #ffffff;
+  --text-muted: #666666;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body, html {
+  background-color: var(--black-monolith);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* The "Billion Dollar" Shell */
+.agency-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  border: 1px solid var(--border-subtle);
+}
+
+/* Institutional Header */
+.top-nav {
+  height: 48px;
+  background: #000;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  justify-content: space-between;
+}
+
+.brand-id {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.telemetry {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.runtime-viewport {
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
+  background: var(--industrial-gray);
+}
+
+/* Footer Telemetry */
+.bottom-nav {
+  height: 32px;
+  background: #000;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #444;
+}

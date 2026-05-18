@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="strapp">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Strapp — Durban-based Web Development agency for Google Maps visibility. POPIA-compliant.">
+<title>strapp // durban operational core</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Inter:wght@300;400;600;800&family=Archivo+Black&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#E8F0FE; --bg2:#F3E8FF; --bg3:#F0FDFA; --text:#1E293B;
+  --accent:#7C3AED; --muted:rgba(30,41,59,.55);
+  --font-display:'Inter',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  --pad:40px;
+}
+html[data-theme="industrial"]{
+  --bg1:#23272e; /* updated for better contrast */
+  --bg2:#1F2937;
+  --bg3:#374151;
+  --text:#FFFFFF;
+  --accent:#F59E0B;
+  --muted:rgba(255,255,255,.6);
+  --font-display:'Archivo Black',sans-serif;
+}
+html[data-theme="retail"]{
+  --bg1:#FEF3C7; --bg2:#FFEDD5; --bg3:#FDE68A; --text:#1E293B;
+  --accent:#EA580C; --muted:rgba(30,41,59,.6);
+  --font-display:'Inter',sans-serif;
+}
+html[data-theme="professional"]{
+  --bg1:#F8FAF6; --bg2:#F1F5F9; --bg3:#E2E8F0; --text:#0F172A;
+  --accent:#0F172A; --muted:rgba(15,23,42,.55);
+  --font-display:'Playfair Display',Georgia,serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;background:var(--bg1);color:var(--text);font-family:var(--font-display);transition:background .6s ease,color .6s ease;overflow-x:hidden}
+body{
+  scroll-snap-type:y mandatory;
+  overflow-y:auto;
+  height:100vh;
+  scroll-behavior:smooth;
+}
+body::-webkit-scrollbar{width:0}
+
+/* Noise/grain overlay */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.35;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.45 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+section{
+  position:relative;width:100vw;height:100vh;scroll-snap-align:start;
+  padding:var(--pad);display:flex;flex-direction:column;justify-content:center;align-items:center;
+  transition:background .6s ease;overflow:hidden;
+}
+#sec1{background:var(--bg1)}
+
+/* edge meta */
+.meta{position:absolute;font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);user-select:none}
+.meta.tl{top:var(--pad);left:var(--pad)}
+.meta.tr{top:var(--pad);right:var(--pad)}
+.meta.bl{bottom:var(--pad);left:var(--pad)}
+.meta.br{bottom:var(--pad);right:var(--pad)}
+
+/* parallax bg shapes */
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;pointer-events:none;will-change:transform}
+.blob.a{width:520px;height:520px;background:radial-gradient(circle,#a5b4fc,transparent 70%);top:-120px;left:-120px}
+.blob.b{width:420px;height:420px;background:radial-gradient(circle,#fbcfe8,transparent 70%);bottom:-100px;right:-100px}
+.blob.c{width:380px;height:380px;background:radial-gradient(circle,#99f6e4,transparent 70%);top:30%;right:10%}
+
+/* SECTION 1 — INIT */
+.strapp-text{font-family:var(--font-mono);font-size:clamp(44px,8vw,110px);font-weight:300;letter-spacing:-.04em;color:var(--text);text-align:center;line-height:1.1;}
+.strapp-subtext{font-family:var(--font-mono);font-size:14px;color:var(--muted);margin-top:16px;text-align:center;max-width:50ch;line-height:1.5;}
+.strapp-text .dots{display:inline-block;min-width:.8em;text-align:left}
+.mode-array{margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;opacity:0;transform:translateY(12px);transition:opacity .8s ease,transform .8s ease}
+.mode-array.show{opacity:1;transform:translateY(0)}
+.mode-btn{
+  font-family:var(--font-mono);font-size:13px;padding:14px 22px;border-radius:999px;
+  background:rgba(255,255,255,.55);backdrop-filter:blur(16px);
+  border:1px solid rgba(30,41,59,.08);color:var(--text);cursor:pointer;
+  transition:transform .25s ease,background .25s ease,color .25s ease;
+}
+.mode-btn:hover{transform:translateY(-2px);background:var(--text);color:var(--bg1)}
+.mode-btn.active{background:var(--text);color:var(--bg1)}
+
+.return-sticky{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  font-family:var(--font-mono);font-size:12px;padding:12px 20px;border-radius:999px;
+  background:rgba(0,0,0,.85);color:#fff;border:none;cursor:pointer;z-index:900;
+  opacity:0;pointer-events:none;transition:opacity .4s ease,transform .4s ease;
+}
+.return-sticky.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+
+/* SECTION 2 + 3 copy blocks */
+.engine-wrap{max-width:1100px;width:100%;display:grid;grid-template-columns:1fr;gap:32px}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.h-display{font-size:clamp(36px,5.5vw,72px);line-height:1.02;letter-spacing:-.035em;font-weight:800;color:var(--text)}
+html[data-theme="professional"] .h-display{font-weight:600}
+.sub{margin-top:18px;font-family:var(--font-mono);font-size:13px;line-height:1.55;max-width:65ch;color:var(--muted)}
+.price-tag{display:inline-flex;align-items:center;gap:10px;margin-top:20px;font-family:var(--font-mono);font-size:13px;padding:8px 14px;border-radius:8px;background:var(--text);color:var(--bg1)}
+.cta-row{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap}
+.cta{
+  font-family:var(--font-mono);font-size:13px;padding:16px 26px;border-radius:12px;
+  background:var(--text);color:var(--bg1);border:none;cursor:pointer;letter-spacing:.05em;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+.cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.18)}
+.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--text)}
+
+/* Billion Dollar UI Engineering - Form Systems */
+#contactForm {
+  background: var(--bg1) !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  max-width: 500px !important;
+  border-radius: 32px !important;
+  padding: 4rem 3rem !important;
+  box-shadow: 0 40px 100px -20px rgba(0,0,0,0.15) !important;
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+html[data-theme="industrial"] #contactForm { border-color: rgba(255,255,255,0.1) !important; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.4) !important; }
+.f-title { font-family: var(--font-display); font-size: 2.6rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 0.6rem; line-height: 1; color: var(--text); }
+html[data-theme="professional"] .f-title { font-weight: 600; font-style: italic; }
+.f-sub { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 2.5rem; line-height: 1.6; max-width: 35ch; }
+.f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 480px) { .f-grid { grid-template-columns: 1fr; } }
+.f-field { margin-bottom: 1.8rem; border-bottom: 1px solid rgba(0,0,0,0.1); transition: border-color 0.3s ease; position: relative; }
+html[data-theme="industrial"] .f-field { border-color: rgba(255,255,255,0.15); }
+.f-field:focus-within { border-color: var(--accent) !important; }
+.f-label { display: block; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.25em; color: var(--muted); margin-bottom: 6px; }
+.f-input { width: 100%; background: transparent !important; border: none !important; outline: none !important; font-family: var(--font-mono); font-size: 15px; padding: 4px 0 10px 0; color: var(--text); }
+.f-input::placeholder { color: var(--muted); opacity: 0.2; }
+#contactForm button[type="submit"] {
+  background: var(--text) !important;
+  color: var(--bg1) !important;
+  padding: 24px !important;
+  border-radius: 16px !important;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: none !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+/* sec 3 presets grid */
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:28px;width:100%;max-width:1100px;overflow-y:auto;max-height:45vh;padding-right:8px;}
+.preset{
+  padding:20px;border-radius:14px;background:rgba(255,255,255,.6);backdrop-filter:blur(20px);
+  border:1px solid rgba(30,41,59,.06);font-family:var(--font-mono);font-size:12px;line-height:1.6;color:var(--text);
+}
+html[data-theme="industrial"] .preset {
+  background: #23272e !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+html[data-theme="industrial"] .h-display,
+html[data-theme="industrial"] .sub,
+html[data-theme="industrial"] .zone,
+html[data-theme="industrial"] .stat,
+html[data-theme="industrial"] .label {
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+}
+html[data-theme="industrial"] .mode-btn,
+html[data-theme="industrial"] .cta,
+html[data-theme="industrial"] .price-tag {
+  background: #23272e !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+html[data-theme="industrial"] .mode-btn.active,
+html[data-theme="industrial"] .mode-btn:hover {
+  background: #fff !important;
+  color: #23272e !important;
+}
+.preset b{display:block;font-family:var(--font-display);font-size:16px;margin-bottom:6px;font-weight:600;letter-spacing:-.01em}
+
+/* SECTION 4 dashboard */
+.dash{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;width:100%;max-width:1100px;margin-top:36px;overflow-y:auto;max-height:55vh;}
+@media(max-width:760px){.dash{grid-template-columns:1fr}}
+.cell{padding:24px;border-radius:16px;background:#F8FAFC;border:1px solid #E2E8F0}
+html[data-theme="industrial"] .cell {
+  background: #23272e !important;
+  border-color: #444 !important;
+}
+html[data-theme="retail"] .cell,
+html[data-theme="professional"] .cell,
+html[data-theme="strapp"] .cell {
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+.cell .label{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#64748B}
+.cell .zone{font-family:'Inter';font-size:28px;font-weight:800;letter-spacing:-.03em;margin-top:8px;color:#0F172A}
+.cell .stat{font-family:var(--font-mono);font-size:12px;color:#475569;margin-top:10px;line-height:1.6}
+.cell .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#10B981;margin-right:8px;animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+/* DOT MATRIX NAV */
+.dotnav{position:fixed;top:50%;right:18px;transform:translateY(-50%);z-index:950;display:flex;flex-direction:column;gap:14px}
+.dot{
+  width:12px;height:12px;border-radius:999px;background:rgba(30,41,59,.25);cursor:pointer;
+  transition:width .3s ease,background .3s ease,padding .3s ease,color .3s ease;
+  display:flex;align-items:center;justify-content:flex-end;overflow:hidden;white-space:nowrap;
+  font-family:var(--font-mono);font-size:11px;color:transparent;padding:0;
+}
+.dot:hover,.dot.active{width:150px;background:var(--text);color:var(--bg1);padding:0 14px 0 12px;height:28px;border-radius:999px}
+ html[data-theme="industrial"] #sec1 {
+/* COOKIE DRAWER */
+.cookie{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(140%);
+ html[data-theme="industrial"] #sec4 {
+  width:min(720px,calc(100vw - 28px));background:var(--bg2);color:var(--text);
+  border-radius:18px;padding:22px 24px;z-index:980;
+  box-shadow:0 24px 60px rgba(0,0,0,.18);backdrop-filter:blur(20px);
+  border:1px solid rgba(30,41,59,.06);
+  transition:transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.cookie.show{transform:translateX(-50%) translateY(0)}
+.cookie h4{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.cookie p{font-family:var(--font-mono);font-size:12px;line-height:1.6;color:var(--text);max-width:60ch}
+.cookie .opts{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap}
+.cookie label{font-family:var(--font-mono);font-size:12px;display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text)}
+.cookie input[type=checkbox]{accent-color:var(--text);width:14px;height:14px}
+.cookie .row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+.cookie .accept{font-family:var(--font-mono);font-size:12px;padding:12px 18px;border-radius:10px;background:var(--text);color:var(--bg1);border:none;cursor:pointer}
+.cookie .accept:hover{opacity:.9}
+.cookie .legal{font-family:var(--font-mono);font-size:10px;color:var(--muted)}
+
+@media (max-width:640px){
+  :root{--pad:22px}
+  .dotnav{right:10px}
+  .meta{font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<nav class="dotnav" aria-label="section navigation">
+  <a class="dot" data-target="sec1"><span class="ico">◐</span>&nbsp;welcome</a>
+  <a class="dot" data-target="sec2"><span class="ico">◧</span>&nbsp;visibility</a>
+  <a class="dot" data-target="sec3"><span class="ico">◩</span>&nbsp;websites</a>
+  <a class="dot" data-target="sec4"><span class="ico">◉</span>&nbsp;zones</a>
+</nav>
+
+<section id="sec1">
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+  <span class="meta tl">strapp // durban.za</span>
+  <span class="meta tr">welcome // optimization hub</span>
+  <span class="meta bl" id="modeLabel">mode: strapp.original</span>
+  <span class="meta br" id="clock">--:--:--</span>
+
+  <h1 class="strapp-text"><span id="rtBase">strapp</span><span class="dots" id="rtDots">.</span></h1>
+  <p class="strapp-subtext">modern websites and google visibility for local businesses.</p>
+
+  <div class="mode-array" id="modeArray">
+    <button class="mode-btn" data-mode="industrial">📦 industrial &amp; logistics</button>
+    <button class="mode-btn" data-mode="retail">🍔 restaurants &amp; food</button>
+    <button class="mode-btn" data-mode="professional">⚖️ professional services</button>
+  </div>
+  <div class="cta-row" style="margin-top: 12px;">
+    <div class="cta ghost" style="font-size:15px; background:rgba(124,58,237,0.08); color:#7C3AED; border:1px solid #7C3AED; padding:12px 22px;">
+      Click the buttons above to see different website looks</div>
+  </div>
+  
+  <div class="cta-row" style="margin-top: 24px;">
+    <button class="cta" data-target="sec2">[ Swipe Down ]</button>
+  </div>
+</section>
+
+<section id="sec2">
+  <div class="blob c"></div>
+  <span class="meta tl">google visibility setup</span>
+  <span class="meta tr">strapp core engine</span>
+  <span class="meta bl">south african local visibility</span>
+  <span class="meta br">priority: high</span>
+
+  <div class="engine-wrap">
+    <div>
+      <div class="eyebrow">google visibility setup</div>
+      <h2 class="h-display" id="eng1Head">get your business found on google.</h2>
+      <p class="sub" id="eng1Sub">Many businesses lose customers simply because people cannot find them online. We create and optimize your Google Business profile so your business can appear on Google Search, Google Maps and local customer searches.<br><br>Includes: business profile setup · maps visibility · WhatsApp and phone linking · category and business hours setup · profile optimization</p>
+      <span class="price-tag">once-off setup · R500</span>
+      <div class="cta-row">
+        <button class="cta" id="ctaDrive">[ Setup My Business ]</button>
+        <button class="cta ghost" data-target="sec3">see website features →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sec3">
+  <div class="blob a" style="opacity:.3"></div>
+  <span class="meta tl">infrastructure / features</span>
+  <span class="meta tr">strapp web engine</span>
+  <span class="meta bl">stack: fast performance · simple landing engines</span>
+  <span class="meta br" id="presetLabel">preset: default</span>
+
+  <div class="engine-wrap">
+    <div>
+      <h2 class="h-display" id="eng2Head">professional websites designed around your business.</h2>
+      <p class="sub" id="eng2Sub">We build fast, clean, mobile-friendly websites for Durban businesses. Strapp builds simple landing layouts focused on professionalism, clear local visibility, and customer conversion.</p>
+    </div>
+    <div class="preset-grid" id="presetGrid">
+      <div class="preset"><b>fast performance</b>Optimized for mobile devices and fast loading speeds across South African networks.</div>
+      <div class="preset"><b>whatsapp integration</b>Allow customers to contact your business instantly through WhatsApp directly from your website.</div>
+      <div class="preset"><b>seo foundations</b>Built with SEO structure to improve your business visibility on Google.</div>
+    </div>
+  </div>
+</section>
+
+<section id="sec4">
+  <span class="meta tl" style="color:#64748B">operational footprint</span>
+  <span class="meta tr" style="color:#64748B">our process &amp; payment</span>
+  <span class="meta bl" style="color:#64748B">geo: durban &amp; surrounding areas</span>
+  <span class="meta br" style="color:#64748B">ready to scale</span>
+
+  <div style="text-align:center;max-width:900px">
+    <div class="eyebrow" style="color:#64748B">businesses in south africa</div>
+    <h2 class="h-display" style="color:#0F172A; font-size: clamp(30px, 4vw, 54px);">Cape Town · Johannesburg · Durban · Pretoria · Bloemfontein · Polokwane · RSA </h2>
+  </div>
+
+  <div class="dash">
+    <div class="cell">
+      <div class="label">our process</div>
+      <div class="zone">pipeline</div>
+      <div class="stat">
+        1. We understand your business<br>
+        2. We recommend the best setup<br>
+        3. We build your digital presence<br>
+        4. We launch and optimize properly
+      </div>
+    </div>
+    <div class="cell">
+      <div class="label">payment structure</div>
+      <div class="zone">financials</div>
+      <div class="stat">
+        <b>Visibility Setup:</b> R500 once-off upfront<br><br>
+        <b>Website Projects:</b> Upfront deposit → progress payment → final payment before deployment
+      </div>
+    </div>
+    <div class="cell" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div class="label">initiate infrastructure</div>
+        <div class="zone">ready?</div>
+        <div class="stat">Whether you need better Google visibility or a professional website, Strapp helps Durban businesses build a stronger online presence.</div>
+      </div>
+      <button class="cta" id="ctaContact" style="margin-top: 14px; width: 100%; text-align: center;">[ Contact Strapp ]</button>
+      <div id="contactModal" style="display:none;position:fixed;z-index:1000;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);align-items:center;justify-content:center;">
+        <form id="contactForm" style="position:relative;display:flex;flex-direction:column;">
+          <button type="button" id="closeContactModal" aria-label="Close" style="position:absolute;top:1.5rem;right:1.5rem;font-size:2rem;color:var(--muted);background:none;border:none;cursor:pointer;">×</button>
+          <h2 class="f-title" id="fTitle">Contact Strapp</h2>
+          <p class="f-sub" id="fSub">Defining the next generation of local visibility. Request an executive consultation.</p>
+          
+          <div class="f-grid">
+            <div class="f-field">
+              <label for="firstName" class="f-label">Identity / First Name</label>
+              <input id="firstName" name="firstName" type="text" required class="f-input" placeholder="Enter name" />
+              <div id="firstNameError" style="color:#ef4444;font-size:0.7rem;margin-top:0.1rem;display:none;font-family:var(--font-mono);"></div>
+            </div>
+            <div class="f-field">
+              <label for="lastName" class="f-label">Surname</label>
+              <input id="lastName" name="lastName" type="text" required class="f-input" placeholder="Enter surname" />
+              <div id="lastNameError" style="color:#ef4444;font-size:0.7rem;margin-top:0.1rem;display:none;font-family:var(--font-mono);"></div>
+            </div>
+          </div>
+
+           <div class="f-field">
+            <label for="email" class="f-label">Communication / Email</label>
+            <input id="email" name="email" type="email" required class="f-input" placeholder="address@firm.global" />
+            <div id="emailError" style="color:#ef4444;font-size:0.7rem;margin-top:0.1rem;display:none;font-family:var(--font-mono);"></div>
+          </div> 
+          
+
+          <div class="f-field">
+            <label for="message" class="f-label">Executive Brief / Message</label>
+            <textarea id="message" name="message" class="f-input" rows="1" placeholder="Define the scope of your inquiry..." style="resize:none;"></textarea>
+          </div>
+
+          <button type="submit" id="fBtn">Submit Protocol</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<button class="return-sticky" id="returnBtn">↺ return to strapp original core</button>
+
+<aside class="cookie" id="cookie" role="dialog" aria-label="cookie preferences">
+  <h4>POPIA · session preferences</h4>
+  <p>Strapp stores essential session data (theme, consent state) under the South African Protection of Personal Information Act (POPIA, 2013). No third-party trackers run unless you explicitly enable analytical tracking below.</p>
+  <div class="opts">
+    <label><input type="checkbox" id="ckEss" checked disabled> essential session data</label>
+    <label><input type="checkbox" id="ckAna"> analytical metric tracking</label>
+  </div>
+  <div class="row">
+    <span class="legal">v1.0 · strapp · stored locally</span>
+    <button class="accept" id="ckAccept">accept and initialize ▸</button>
+  </div>
+</aside>
+
+<script>
+(() => {
+  const root = document.documentElement;
+
+  /* ---------- clock ---------- */
+  const clockEl = document.getElementById('clock');
+  const tick = () => {
+    const d = new Date();
+    clockEl.textContent = d.toLocaleTimeString('en-ZA',{hour12:false}) + ' SAST';
+  };
+  tick(); setInterval(tick,1000);
+
+  /* ---------- strapp loader animation ---------- */
+  const dotsEl = document.getElementById('rtDots');
+  const modeArray = document.getElementById('modeArray');
+  let dotCount = 1;
+  const loader = setInterval(()=>{
+    dotCount = dotCount >= 4 ? 1 : dotCount+1;
+    dotsEl.textContent = '.'.repeat(dotCount);
+  },280);
+  setTimeout(()=>{ clearInterval(loader); dotsEl.textContent='.'; modeArray.classList.add('show'); }, 2400);
+
+  /* ---------- theme swap ---------- */
+  const modeLabel = document.getElementById('modeLabel');
+  const presetLabel = document.getElementById('presetLabel');
+  const returnBtn = document.getElementById('returnBtn');
+  const eng1Head = document.getElementById('eng1Head');
+  const eng1Sub = document.getElementById('eng1Sub');
+  const eng2Head = document.getElementById('eng2Head');
+  const eng2Sub = document.getElementById('eng2Sub');
+  const presetGrid = document.getElementById('presetGrid');
+
+  const COPY = {
+    strapp:{
+      label:'mode: strapp.original',
+      preset:'preset: default',
+      e1h:'get your business found on google.',
+      e1s:'Many businesses lose customers simply because people cannot find them online. We create and optimize your Google Business profile so your business can appear on Google Search, Google Maps and local customer searches. Includes: business profile setup · maps visibility · WhatsApp and phone linking · category and business hours setup · profile optimization',
+      e2h:'professional websites designed around your business.',
+      e2s:'We build fast, clean, mobile-friendly websites for Durban businesses. Strapp builds simple landing layouts focused on professionalism, clear local visibility, and customer conversion.',
+      presets:[
+        ['fast performance','Optimized for mobile devices and fast loading speeds across South African networks.'],
+        ['whatsapp integration','Allow customers to contact your business instantly through WhatsApp directly from your website.'],
+        ['seo foundations','Built with SEO structure to improve your business visibility on Google.']
+      ],
+      fTitle: "Send us an email.",
+      fSub: "Defining the next generation of local visibility. Request an executive consultation.",
+      fBtn: "Send Email ▸"
+    },
+    industrial:{
+      label:'mode: industrial.heavy',
+      preset:'preset: industrial.and.logistics',
+      e1h:'get your business found on google.',
+      e1s:'Perfect for logistics companies, industrial suppliers, wholesalers, construction businesses, and plant hire operations. We make sure your yard coordinates, operational specifications, and dispatch contacts are visible on Maps.',
+      e2h:'systems engineered for industrial performance.',
+      e2s:'Custom profiles tailored for high-utility operational setups. Built as clear, functional showcase landing pages for heavy-duty presentation across South African mobile networks.',
+      presets:[
+        ['quote layout options','Streamlined callouts configured straight to your operations phone number or email.'],
+        ['product listings','Clear, zero-bloat lists detailing your current inventory matrix, capabilities, and service capacities.'],
+          // ...removed branch information card as requested
+        ['whatsapp integration','Direct routing lines connecting site managers or buyers instantly to your phone.']
+      ],
+      fTitle: "Industrial & Logistics",
+      fSub: "Get your yard, workshop, or warehouse accurately mapped where suppliers and fleets can actually find it. Global online presence and, fast landing sites.",
+      fBtn: "[Send Email]"
+    },
+    retail:{
+      label:'mode: retail.&.food',
+      preset:'preset: restaurants.and.food',
+      e1h:'get your business found on google.',
+      e1s:'Modern visibility architectures optimized for restaurants, takeaways, cafés, and local food brands. Get found by local customers exactly when hunger strikes.',
+      e2h:'digital layouts built to fill seats and ring registers.',
+      e2s:'Fast-rendering menu displays and direct customer contact windows designed to make ordering completely seamless without complex online ordering systems.',
+      presets:[
+        ['digital menus','Highly accessible, responsive mobile layouts optimized for fast local browsing.'],
+        ['whatsapp ordering','Let your customers tap straight from a menu item to place an order over chat pipelines.'],
+          // ...removed specials & promotions card as requested
+        ['gallery & contact','High-performance image assets and clear physical destination locators.']
+      ],
+      fTitle: "Resturants & Food",
+      fSub: "Get your shop pinned accurately where hungry locals and delivery riders are actually searching. We lock down your map presence.",
+      fBtn: "Send Email ▸"
+    },
+    professional:{
+      label:'mode: professional.firm',
+      preset:'preset: professional.services',
+      e1h:'get your business found on google.',
+      e1s:'Polished profiling adjustments engineered for law firms, medical clinics, corporate consultants, accountants, and creative agencies looking to project trust and credibility.',
+      e2h:'Measured interfaces that build corporate credibility.',
+      e2s:'Clean layouts structured explicitly to clarify your operational methodologies, scope of practice areas, and intake routes.',
+      presets:[
+        ['law firms & clinics','Refined, high-contrast layouts emphasizing professional authority and practice specialties.'],
+        ['consultants & agencies','Polished profiles and service breakdowns designed around straightforward intake.'],
+        ['credible and modern','Typography and visual space balanced perfectly to ensure your firm stands out as an authority.'],
+          // ...removed trust optimization card as requested
+      ]
+      ,
+      fTitle: "Professional Services",
+      fSub: "Secure your firm’s digital presence where corporate clients and partners expect to find clean, accurate information. We validate your firm's location on the map and build high-density, sharp informational portals so your business stays easy to find and verify.",
+      fBtn: "Send Email ▸",
+    }
+  };
+
+  const applyTheme = (mode) => {
+    root.setAttribute('data-theme', mode === 'strapp' ? 'strapp' : mode);
+    const c = COPY[mode] || COPY['strapp'];
+    modeLabel.textContent = c.label;
+    presetLabel.textContent = c.preset;
+    eng1Head.textContent = c.e1h;
+    eng1Sub.textContent = c.e1s;
+    eng2Head.textContent = c.e2h;
+    eng2Sub.textContent = c.e2s;
+    document.getElementById('fTitle').textContent = c.fTitle;
+    document.getElementById('fSub').textContent = c.fSub;
+    document.getElementById('fBtn').textContent = c.fBtn;
+    presetGrid.innerHTML = c.presets.map(p => `<div class="preset"><b>${p[0]}</b>${p[1]}</div>`).join('');
+    document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+    returnBtn.classList.toggle('show', mode !== 'strapp');
+    sessionStorage.setItem('rt_mode', mode);
+  };
+
+  document.querySelectorAll('.mode-btn').forEach(btn=>{
+    btn.addEventListener('click',()=> applyTheme(btn.dataset.mode));
+  });
+  returnBtn.addEventListener('click', ()=> applyTheme('strapp'));
+  const savedMode = sessionStorage.getItem('rt_mode');
+  if (savedMode && COPY[savedMode]) applyTheme(savedMode);
+
+  // WhatsApp CTA logic removed as per requirements
+  // Modal logic for Contact Strapp
+  const ctaContactBtn = document.getElementById('ctaContact');
+  const contactModal = document.getElementById('contactModal');
+  const closeContactModal = document.getElementById('closeContactModal');
+  const contactForm = document.getElementById('contactForm');
+  const firstName = document.getElementById('firstName');
+  const lastName = document.getElementById('lastName');
+  const email = document.getElementById('email');
+  const firstNameError = document.getElementById('firstNameError');
+  const lastNameError = document.getElementById('lastNameError');
+  const emailError = document.getElementById('emailError');
+  const fBtn = document.getElementById('fBtn');
+
+  function openContactModal() {
+    contactModal.style.display = 'flex';
+    setTimeout(()=>firstName.focus(), 100);
+  }
+  function closeContactModalFn() {
+    contactModal.style.display = 'none';
+    contactForm.reset();
+    [firstNameError, lastNameError, emailError].forEach(e=>{e.style.display='none';e.textContent='';});
+  }
+  ctaContactBtn.addEventListener('click', openContactModal);
+  // Also bind Setup My Business button to open the contact modal
+  const ctaDriveBtn = document.getElementById('ctaDrive');
+  if (ctaDriveBtn) {
+    ctaDriveBtn.addEventListener('click', openContactModal);
+  }
+  closeContactModal.addEventListener('click', closeContactModalFn);
+  contactModal.addEventListener('click', e=>{if(e.target===contactModal)closeContactModalFn();});
+
+  contactForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+    // Reset errors
+    [firstNameError, lastNameError, emailError].forEach(e=>{e.style.display='none';e.textContent='';});
+    // Validate fields
+    if (!firstName.value.trim()) {
+      firstNameError.textContent = 'First name is required';
+      firstNameError.style.display = 'block';
+      valid = false;
+    }
+    if (!lastName.value.trim()) {
+      lastNameError.textContent = 'Last name is required';
+      lastNameError.style.display = 'block';
+      valid = false;
+    }
+    const emailVal = email.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailVal) {
+      emailError.textContent = 'Email is required';
+      emailError.style.display = 'block';
+      valid = false;
+    } else if (!emailRegex.test(emailVal)) {
+      emailError.textContent = 'Invalid email address';
+      emailError.style.display = 'block';
+      valid = false;
+    }
+    if (!valid) return;
+
+    // Initiate Edge Function Fetch
+    const originalText = fBtn.innerText;
+    fBtn.innerText = "Transmitting...";
+    fBtn.disabled = true;
+
+    fetch('https://ktlrlmreaqkcbwwcqobw.supabase.co/functions/v1/contact-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: firstName.value.trim(),
+        lastName: lastName.value.trim(),
+        email: email.value.trim(),
+        message: document.getElementById('message').value.trim()
+      })
+    })
+    .then(async response => {
+      if (!response.ok) throw new Error('Transmission failure');
+      alert('Email sent. Our team will reach out shortly.');
+      closeContactModalFn();
+    })
+    .catch(error => {
+      console.error('Lead capture error:', error);
+      alert('Network timeout. Please use the social media @strapp for priority access.');
+    })
+    .finally(() => {
+      fBtn.innerText = originalText;
+      fBtn.disabled = false;
+    });
+  });
+
+  /* ---------- dot nav + intersection observer ---------- */
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach(d=>{
+    d.addEventListener('click', e=>{
+      e.preventDefault();
+      document.getElementById(d.dataset.target).scrollIntoView({behavior:'smooth'});
+    });
+  });
+  document.querySelectorAll('[data-target]').forEach(el=>{
+    if (el.classList.contains('dot')) return;
+    el.addEventListener('click', ()=> document.getElementById(el.dataset.target).scrollIntoView({behavior:'smooth'}));
+  });
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if (e.isIntersecting && e.intersectionRatio > 0.55){
+        dots.forEach(d=> d.classList.toggle('active', d.dataset.target === e.target.id));
+      }
+    });
+  },{threshold:[0.6]});
+  document.querySelectorAll('section').forEach(s=> io.observe(s));
+
+  /* ---------- parallax (translate blobs on scroll) ---------- */
+  const blobs = document.querySelectorAll('.blob');
+  let ticking = false;
+  document.body.addEventListener('scroll', ()=>{
+    if (!ticking){
+      requestAnimationFrame(()=>{
+        const y = document.body.scrollTop;
+        blobs.forEach((b,i)=>{
+          const speed = (i%3===0)?0.15:(i%3===1)?0.25:0.1;
+          b.style.transform = `translate3d(0, ${y*speed}px, 0)`;
+        });
+        ticking = false;
+      });
+      ticking = true;
+    }
+  },{passive:true});
+
+  /* ---------- cookies / POPIA ---------- */
+  const cookie = document.getElementById('cookie');
+  const ckAna = document.getElementById('ckAna');
+  const ckAccept = document.getElementById('ckAccept');
+  const stored = localStorage.getItem('rt_popia');
+  if (!stored){
+    setTimeout(()=> cookie.classList.add('show'), 1200);
+  } else {
+    try { ckAna.checked = !!JSON.parse(stored).analytical; } catch(e){}
+  }
+  ckAccept.addEventListener('click', ()=>{
+    localStorage.setItem('rt_popia', JSON.stringify({
+      essential:true, analytical:ckAna.checked, ts:Date.now()
+    }));
+    cookie.classList.remove('show');
+  });
+})();
+</script>
+</body>
+</html>
