@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
@@ -5,14 +6,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const { firstName, lastName, email, message } = await req.json()
+    const { firstName, businessName, email, message } = await req.json()
 
     // 1. Get Resend API Key from Env
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
@@ -28,20 +29,20 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Strapp Core Lead <onboarding@resend.dev>',
-        to: ['strapp.co.za@gmail.com'],
-        subject: `Strategic Inquiry: ${firstName} ${lastName}`,
+        from: 'Sync Up Core Lead <onboarding@resend.dev>',
+        to: ['syncup.co.za@gmail.com'],
+        subject: `Strategic Inquiry: ${firstName} ${businessName}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
             <h2 style="color: #1a1a1a; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; font-weight: 300;">New Strategic Inquiry Captured</h2>
-            <p style="font-size: 15px;"><strong>Identity:</strong> ${firstName} ${lastName}</p>
+            <p style="font-size: 15px;"><strong>Identity:</strong> ${firstName} — ${businessName}</p>
             <p style="font-size: 15px;"><strong>Direct Channel:</strong> ${email}</p>
             <div style="background: #fdfdfd; padding: 15px; border-left: 4px solid #000; margin-top: 20px;">
               <p style="font-weight: bold; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #666;">Executive Brief:</p>
               <p style="line-height: 1.6; white-space: pre-wrap; font-size: 14px;">${message || 'No additional details provided.'}</p>
             </div>
             <p style="color: #aaa; font-size: 11px; margin-top: 40px; text-align: center;">
-              Internal Document // Strapp Operational Core (Durban)
+              Internal Document // sync up Operational Core (Durban)
             </p>
           </div>
         `,

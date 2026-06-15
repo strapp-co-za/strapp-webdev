@@ -1,0 +1,21 @@
+{
+  "name": "Strapp Walk",
+  "short_name": "StrappWalk",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#7C3AED",
+  "theme_color": "#7C3AED",
+  "description": "Strapp Walk – Mobile-first PWA for iPhone XR, optimized for field operations.",
+  "icons": [
+    {
+      "src": "/logo.sv",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/logo.sv",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

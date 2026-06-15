@@ -68,7 +68,7 @@ serve(async (req: Request) => {
 		}
 	}
 
-	let body: { firstName?: string; lastName?: string; email?: string };
+	let body: { firstName?: string; businessName?: string; email?: string };
 	try {
 		body = await req.json();
 	} catch {
@@ -79,10 +79,10 @@ serve(async (req: Request) => {
 	}
 
 	// Field-level validation
-	const { firstName, lastName, email } = body;
+	const { firstName, businessName, email } = body;
 	const errors: Record<string, string> = {};
 	if (!firstName) errors.firstName = 'First name is required';
-	if (!lastName) errors.lastName = 'Last name is required';
+	if (!businessName) errors.businessName = 'Business name is required';
 	if (!email) errors.email = 'Email is required';
 	else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Invalid email address';
 	if (Object.keys(errors).length > 0) {
@@ -107,8 +107,8 @@ serve(async (req: Request) => {
 		to: TO_EMAIL,
 		subject: `New Google Visibility Setup Request`,
 		reply_to: email,
-		text: `Name: ${firstName} ${lastName}\nEmail: ${email}\n\nExecutive Brief:\nThe user has requested to set up their business for Google Visibility. Please reach out to them for next steps.`,
-		html: `<b>Name:</b> ${firstName} ${lastName}<br/><b>Email:</b> ${email}<br/><b>Executive Brief:</b><br/>The user has requested to set up their business for Google Visibility. Please reach out to them for next steps.`
+		text: `Name: ${firstName}\nBusiness: ${businessName}\nEmail: ${email}\n\nExecutive Brief:\nThe user has requested to set up their business for Google Visibility. Please reach out to them for next steps.`,
+		html: `<b>Name:</b> ${firstName}<br/><b>Business:</b> ${businessName}<br/><b>Email:</b> ${email}<br/><b>Executive Brief:</b><br/>The user has requested to set up their business for Google Visibility. Please reach out to them for next steps.`
 	};
 
 	// Send email via Resend

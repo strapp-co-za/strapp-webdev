@@ -1,4 +1,4 @@
-# Email Infrastructure Setup (Strapp)
+# Email Infrastructure Setup (sync up)
 
 This project uses **Supabase Edge Functions** to bridge the contact form and **Resend**.
 
@@ -25,4 +25,4 @@ supabase functions deploy contact-email --no-verify-jwt
 In `public/runtime.html`, find the `fetch` call and replace `YOUR_SUPABASE_PROJECT_ID` with the Reference ID found in your Supabase Project Settings (General tab).
 
 ## 4. Testing
-Submit the form. Resend's `onboarding@resend.dev` will send the email directly to `strapp.co.za@gmail.com`. Once you verify a custom domain in Resend, you can change the `from` address in the Edge Function.
+Submit the form. Resend's `onboarding@resend.dev` will send the email directly to `syncup.co.za@gmail.com`. Once you verify a custom domain in Resend, you can change the `from` address in the Edge Function.

@@ -4,7 +4,7 @@
 - **Strengths:**
   - Implements strict CORS with a whitelist, reducing attack surface.
   - Handles preflight (OPTIONS) requests correctly.
-  - Validates required fields (`firstName`, `lastName`, `email`) before processing.
+  - Validates required fields (`firstName`, `businessName`, `email`) before processing.
   - Uses a seeded, non-user-editable executive brief for email content, reducing abuse/spam risk.
   - Error handling is robust, with clear error messages and status codes.
 - **Minor Gaps:**

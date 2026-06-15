@@ -59,7 +59,7 @@
       - **Tertiary Structural Frame**
     - `.meta.tl`, `.meta.tr`, `.meta.bl`, `.meta.br`: Inline metadata.
       - **Secondary Contextual Data**
-    - `.strapp-text`, `.strapp-subtext`: Main headline, subtext.
+    - `.strapp-text`, `.strapp-subtext`: Main headline, subtext used for the sync up hero experience.
       - **Primary Core Utility**
     - `.mode-array`: Theme switcher buttons.
       - **Primary Core Utility**
